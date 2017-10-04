@@ -8,4 +8,5 @@ def load_dot_mat(path, db_name):
         mat = scipy.io.loadmat(path)
     except NotImplementedError:
         mat = h5py.File(path)
+
     return numpy.array(mat[db_name]).transpose()
