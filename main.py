@@ -11,13 +11,14 @@ seaborn.set()
 methods = [affinity.compute_affinity, affinity.com_aff_local_scaling]
 names = ['Basic Affinity', 'Affinity Local Scaling']
 # ALL datasets: "be2" "be3" "ch" "dc3" "ds3" "ds4" "ds5" "g4" "happy" "hm" "hm2" "iris" "rollo2" "sp" "tar"
-data_sets = ['be3', 'happy', 'hm', 'sp']
+data_sets = ['be3', 'happy', 'hm', 'sp', 'tar']
 
 num_classes = {
     'be3': 3,
     'happy': 3,
     'hm': 2,
     'sp': 3,
+    'tar': 6,
 }
 
 H_plot, W_plot = len(data_sets), len(methods)
@@ -38,3 +39,4 @@ for i in range(W_plot):
             plt.title(names[i])
 
 plt.show()
+# plt.savefig('example.png')
