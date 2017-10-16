@@ -1,4 +1,5 @@
 from itertools import cycle, islice
+from functools import partial
 
 import matplotlib.pyplot as plt
 import numpy
@@ -8,8 +9,14 @@ from spectral import utils, affinity, clustering
 
 seaborn.set()
 
-methods = [affinity.compute_affinity, affinity.com_aff_local_scaling]
-names = ['Basic Affinity', 'Affinity Local Scaling']
+methods = [
+    affinity.compute_affinity,
+    affinity.com_aff_local_scaling,
+    affinity.automatic_prunning,
+    partial(affinity.automatic_prunning, affinity=affinity.compute_affinity)
+]
+
+names = ['Basic Affinity', 'Affinity Local Scaling', 'Auto-pruning + LS', 'Auto-pruning']
 # ALL datasets: "be2" "be3" "ch" "dc3" "ds3" "ds4" "ds5" "g4" "happy" "hm" "hm2" "iris" "rollo2" "sp" "tar"
 data_sets = ['be3', 'happy', 'hm', 'sp', 'tar']
 
