@@ -8,27 +8,33 @@ from spectral import utils, affinity, clustering
 
 seaborn.set()
 
+methods = [affinity.compute_affinity, affinity.com_aff_local_scaling]
+names = ['Basic Affinity', 'Affinity Local Scaling']
 # ALL datasets: "be2" "be3" "ch" "dc3" "ds3" "ds4" "ds5" "g4" "happy" "hm" "hm2" "iris" "rollo2" "sp" "tar"
-# working examples:
-#   be2: sig 0.1
-#   ds4: sig 0.01
-#   happy: sig 0.03
-#   hm: sig 0.1
-#   sp: sig 1
-#   tar: sig 0.5
-X = utils.load_dot_mat('data/DB.mat', 'DB/tar')
-N = X.shape[0]
-K = 6
+data_sets = ['be3', 'happy', 'hm', 'sp']
 
-print("Performing spectral clustering on %d items and %d clases" % (N, K))
-A = affinity.compute_affinity(X)
+num_classes = {
+    'be3': 3,
+    'happy': 3,
+    'hm': 2,
+    'sp': 3,
+}
 
-Y = clustering.spectral_clustering(A, K)
-Y2 = clustering.k_means(X, K)
+H_plot, W_plot = len(data_sets), len(methods)
 
-colors = numpy.array(list(islice(cycle(seaborn.color_palette()), int(max(Y) + 1))))
+for i in range(W_plot):
+    for j in range(H_plot):
+        X = utils.load_dot_mat('data/DB.mat', 'DB/' + data_sets[j])
+        N = X.shape[0]
+        K = num_classes.get(data_sets[j], 3)
+        print("SC on dataset %r with %d clases with method %r" % (data_sets[j], K, names[i]))
+        A = methods[i](X)
+        Y = clustering.spectral_clustering(A, K)
 
-plt.scatter(X[:, 0], X[:, 1], color=colors[Y])
-plt.show()
-plt.scatter(X[:, 0], X[:, 1], color=colors[Y2])
+        colors = numpy.array(list(islice(cycle(seaborn.color_palette()), int(max(Y) + 1))))
+        plt.subplot(H_plot, W_plot, j * W_plot + i + 1)
+        plt.scatter(X[:, 0], X[:, 1], color=colors[Y])
+        if j == 0:
+            plt.title(names[i])
+
 plt.show()
