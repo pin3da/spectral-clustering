@@ -5,4 +5,4 @@ Python implementation of the spectral clustering algorithm.
 
 ----
 
-[Manuel Pineda](://github.com/pin3da)
+[Manuel Pineda](https://github.com/pin3da)

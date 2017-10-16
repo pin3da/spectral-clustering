@@ -23,6 +23,10 @@ num_classes = {
 
 H_plot, W_plot = len(data_sets), len(methods)
 
+plt.figure(figsize=(W_plot * 2 + 3, H_plot * 2 + 3,))
+plt.subplots_adjust(left=0.1, right=0.98, bottom=0.05, top=0.98, wspace=0.2,
+                    hspace=0.3)
+
 for i in range(W_plot):
     for j in range(H_plot):
         X = utils.load_dot_mat('data/DB.mat', 'DB/' + data_sets[j])
@@ -34,9 +38,9 @@ for i in range(W_plot):
 
         colors = numpy.array(list(islice(cycle(seaborn.color_palette()), int(max(Y) + 1))))
         plt.subplot(H_plot, W_plot, j * W_plot + i + 1)
-        plt.scatter(X[:, 0], X[:, 1], color=colors[Y])
+        plt.scatter(X[:, 0], X[:, 1], color=colors[Y], s=6, alpha=0.6)
         if j == 0:
             plt.title(names[i])
 
-plt.show()
-# plt.savefig('example.png')
+# plt.show()
+plt.savefig('example.png')
