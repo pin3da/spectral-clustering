@@ -1,4 +1,7 @@
+from functools import partial
+
 import numpy
+from scipy.optimize import minimize
 
 from .kernels import squared_exponential, radial_basis_phi
 
@@ -29,9 +32,43 @@ def com_aff_local_scaling(X):
     return ans
 
 
+def _log_sq(x, eps=1e-14):
+    t = numpy.log(x + eps)
+    return t * t
+
+
+def _auto_prunning_cost(X, K, b, v, gamma=0.5):
+    kernel = partial(radial_basis_phi, b=b, v=v)
+    K_bv = compute_affinity(X, kernel)
+    num = numpy.linalg.norm(K_bv - K)
+    den = numpy.sqrt(numpy.linalg.norm(K_bv) * numpy.linalg.norm(K))
+    rho = _log_sq(num / den)
+    n = X.shape[0]
+    s = 1.0 - (numpy.count_nonzero(K_bv) / (n * n))
+    s = _log_sq(s)
+    return numpy.sqrt((1.0 - gamma) * rho + gamma * s)
+
+
+def _auto_prunning_find_b(X, v, affinity):
+    K = affinity(X)
+
+    def cost_b(x):
+        return -1 * _auto_prunning_cost(X, K, x, v)  # we need to maximize this function
+
+    result = minimize(
+        cost_b,
+        [numpy.mean(K)],
+        bounds=((0, None),),  # positive
+        # options={'disp': True, 'maxiter': 100})
+    )
+    print('best b ', result.x[0])
+    return result.x[0]
+
+
 def automatic_prunning(X, affinity=com_aff_local_scaling):
-    b = 10
-    v = 2
+    D = X.shape[1]
+    v = (D + 1) / 2
+    b = _auto_prunning_find_b(X, v, affinity)
 
     affinity = affinity(X)
     N = X.shape[0]

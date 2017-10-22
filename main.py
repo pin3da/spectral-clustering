@@ -10,13 +10,12 @@ from spectral import utils, affinity, clustering
 seaborn.set()
 
 methods = [
-    affinity.compute_affinity,
-    affinity.com_aff_local_scaling,
-    affinity.automatic_prunning,
-    partial(affinity.automatic_prunning, affinity=affinity.compute_affinity)
+    (affinity.compute_affinity, 'Basic Affinity'),
+    (affinity.com_aff_local_scaling, 'Affinity Local Scaling'),
+    (affinity.automatic_prunning, 'Auto-pruning + LS'),
+    # (partial(affinity.automatic_prunning, affinity=affinity.compute_affinity), 'Auto-pruning'),
 ]
 
-names = ['Basic Affinity', 'Affinity Local Scaling', 'Auto-pruning + LS', 'Auto-pruning']
 # ALL datasets: "be2" "be3" "ch" "dc3" "ds3" "ds4" "ds5" "g4" "happy" "hm" "hm2" "iris" "rollo2" "sp" "tar"
 data_sets = ['be3', 'happy', 'hm', 'sp', 'tar']
 
@@ -39,15 +38,16 @@ for i in range(W_plot):
         X = utils.load_dot_mat('data/DB.mat', 'DB/' + data_sets[j])
         N = X.shape[0]
         K = num_classes.get(data_sets[j], 3)
-        print("SC on dataset %r with %d clases with method %r" % (data_sets[j], K, names[i]))
-        A = methods[i](X)
+        affinity, name = methods[i]
+        A = affinity(X)
+        print("SC on dataset %r with %d clases with method %r" % (data_sets[j], K, name))
         Y = clustering.spectral_clustering(A, K)
 
         colors = numpy.array(list(islice(cycle(seaborn.color_palette()), int(max(Y) + 1))))
         plt.subplot(H_plot, W_plot, j * W_plot + i + 1)
         plt.scatter(X[:, 0], X[:, 1], color=colors[Y], s=6, alpha=0.6)
         if j == 0:
-            plt.title(names[i])
+            plt.title(name)
 
 # plt.show()
-plt.savefig('example.png')
+plt.savefig('img/uncentered-auto.png')
